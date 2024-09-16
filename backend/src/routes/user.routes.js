@@ -1,8 +1,8 @@
 import { Router } from "express";
 import {
     getCurrentUser,
-    getUserAvailability,
     getUserById,
+    getUserOverlay,
     getUsers,
     helloTest,
     loginUser,
@@ -10,7 +10,7 @@ import {
     pingJson,
     refreshAccessToken,
     registerUser,
-    updateAvailability
+    updateOverlay
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 helloTest
@@ -22,15 +22,15 @@ router.route("/login").post(loginUser)
 router.route("/logout").post(verifyJWT,  logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/current-user").get(verifyJWT, getCurrentUser)
-router.route("/availability").post(getUserAvailability)
-router.route("/update-availability").post(updateAvailability)
+router.route("/overlay").post(getUserOverlay)
+router.route("/update-overlay").post(updateOverlay)
 
 
 router.route("/admin/users").get(getUsers)
 router.route("/admin/user").post(getUserById)
 
 router.route("/ping").post(pingJson)
-//router.route("/users/:id/availability").get(getUserAvailability)
+//router.route("/users/:id/Overlay").get(getUserOverlay)
 
 //router.route("/").get(helloTest)
 

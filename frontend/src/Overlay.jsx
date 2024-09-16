@@ -1,4 +1,4 @@
-import axios from "axios";
+import Konva from "konva";
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiLoaderCircle } from "react-icons/bi";
 import { FaLongArrowAltRight } from "react-icons/fa";
@@ -18,6 +18,7 @@ import {
     Transformer
 } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
+import { axiosAPI } from './api/axiosAPI';
 import { EditableText } from "./components/EditableText.jsx";
 import { ACTIONS } from "./constants";
 //import React, { useEffect, useState } from 'react';
@@ -43,6 +44,7 @@ const Overlay = () => {
     const [isTransforming, setIsTransforming] = useState(false);
 
     const [pos, setPos] = useState("relative");
+    const [mode, setMode] = useState("video");
     
     const strokeColor = "#000";
     const isPaining = useRef();
@@ -62,7 +64,8 @@ const Overlay = () => {
         // document.addEventListener("click", checkMousePos);
 
         const changePos = () => {
-            (pos === "relative") ? setPos("absolute") : setPos("relative");
+            (pos === "relative") ? setPos("absolute translate-y-80") : setPos("relative");
+            (mode==="video") ? setMode("overlay") : setMode("video");
         }
     
         useEffect(() => {
@@ -266,46 +269,89 @@ const Overlay = () => {
     
         async function handleSave() {
         let stageJson = stageRef.current.toJSON();
-        const rect = rectangles;
+        
         //let rectJson = rect.toJSON();
         console.log("stage", stageJson);
-        console.log(rect);
+        console.log("rect", rectangles);
+        console.log("circle", circles);
+        console.log("arrow", arrows);
+        console.log("scribble", scribbles);
+
         console.log("text", textAreas);
     
     
-        try {
-            const response = await axios.post("http://localhost:8000/api/users/ping", rect);
-            console.log("res",response.data);
-        } catch (error) {
-            console.error(error);
+        let data = {
+            _id: "66e7242cea48f1eb1a37499c",
+            overlay:{
+                rect: rectangles,
+                circle: circles,
+                arrow: arrows,
+                scribble: scribbles,
+            }
+            
         }
+        
+        try{
+            const response = await axiosAPI.post('/users/update-overlay', data)
+            console.log(response.data);
+            
+            //if(response.data.data) dispatch(authLogin(response.data.data));
+            
+            
+            
+        }catch(err){
+            console.log(err.response.data);
+            
         }
-    
-        function handleLoad() {
+    }
+        async function handleLoad() {
+            console.log(stageRef.current);
+            let stageJson = stageRef.current.toJSON();
+            console.log("stageJson", stageJson);
+            
+
+            // stageRef.current = currentStage;
+            
+
+            // Konva.Stage.create(currentStage);
+
+            console.log(stageJson);
+
+            let data = {
+                _id: "66e7242cea48f1eb1a37499c",
+                
+            }
     
     
         const json={"attrs":{"width":648,"height":944},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"height":944,"width":648,"fill":"#ffffff","id":"bg"},"className":"Rect"},{"attrs":{"x":143,"y":439,"stroke":"#000","fill":"#ff0000","height":114,"width":379},"className":"Rect"},{"attrs":{},"className":"Transformer"}]}]}
     
-        const rectload = [
-            {
-                "id": "a29346a0-ace0-4439-b4b1-4fec42f87b58",
-                "x": 149,
-                "y": 206,
-                "height": 403,
-                "width": 324,
-                "fillColor": "#ff0000"
-            },
-            {
-                "id": "abb4a513-ec1f-4705-8719-faf5e86b253c",
-                "x": 276,
-                "y": 650,
-                "height": 146,
-                "width": 264,
-                "fillColor": "#001eff"
-            }
-        ]
+        try{
+            const response = await axiosAPI.post('/users/overlay', data)
+            console.log(response.data);
+            console.log("rect :",response.data.data.rect);
+            console.log("circle :",response.data.data.circle);
+            console.log("arrow :",response.data.data.arrow);
+            console.log("scribble :",response.data.data.scribble);
+
+            setRectangles(response.data.data.rect)
+            setCircles(response.data.data.circle)
+            setArrows(response.data.data.arrow)
+            setScribbles(response.data.data.scribble)
+
+            Konva.Rect.create(response.data.data.rect);
+            Konva.Circle.create(response.data.data.circle);
+            Konva.Arrow.create(response.data.data.arrow);
+            Konva.Scribble.create(response.data.data.scribble);
+            
+            //if(response.data.data) dispatch(authLogin(response.data.data));
+            
+            
+            
+        }catch(err){
+            console.log(err.response.data);
+            
+        }
     
-        setRectangles(rectload)
         }
     
         function handleClear() {
@@ -343,8 +389,8 @@ const Overlay = () => {
         <>
             <div  className=" relative w-full h-screen overflow-hidden">
             {/* Controls */}
-            <div className="absolute bottom-20 z-10 w-full py-2 ">
-                <div className="flex justify-center items-center gap-3 py-2 px-3 w-fit mx-auto border shadow-lg rounded-lg">
+            <div className="absolute bg-blue-200 -bottom-0 z-10 w-full py-2 ">
+                <div className="flex justify-center z-20 items-center gap-3 py-2 px-3 w-fit mx-auto border-4 shadow-lg rounded-lg border-teal-500 border-solid bg-white">
                 <button
                     className={
                     action === ACTIONS.SELECT
@@ -437,7 +483,7 @@ const Overlay = () => {
                 </div>
             </div>
             {/* Canvas */}
-            <div id="video-player" className="-z-10 bg-transparent flex justify-center">
+            <div id="video-player" className="-z-10 bg-transparent flex flex-col justify-center items-center">
             <iframe className={`-translate-y-160 ${pos } `} width="640" height="480" src="https://rtsp.me/embed/arAnAy9y/" allow="fullscreen" frameborder="0" onVolumeChange={e => console.log(e)}>
     
             </iframe>
@@ -445,6 +491,7 @@ const Overlay = () => {
             <a href="https://rtsp.me" title ='RTSP.ME - Free website RTSP video steaming service' target="_blank" >rtsp.me
             </a>
             </p>
+            <h1>{`${mode}`}</h1>
             </div>
             <Stage id = "canvas" className="z-10 bg-transparent"
                 ref={stageRef}

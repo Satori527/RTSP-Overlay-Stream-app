@@ -5,23 +5,79 @@ import mongoose, { Schema } from "mongoose";
 
 const { json } = bodyParser
 
-const fromToSchema = new Schema({
-    from: String,
-    to: String,
-    active: Boolean,
+
+const overlaySchema = new Schema({
+    rect: [{
+        id: {
+            type: String,
+            
+        },
+        x: {
+            type: Number,
+        },
+        y: {
+            type: Number,
+        },
+        height: {
+            type: Number,
+        },
+        width: {
+            type: Number,
+        },
+        fillColor: {
+            type: String,
+        },
+    }],
+
+    circle: [{
+        id: {
+            type: String,
+            
+        },
+        x: {
+            type: Number,
+        },
+        y: {
+            type: Number,
+        },
+        radius: {
+            type: Number,
+        },
+        fillColor: {
+            type: String,
+        },
+    }],
+
+    arrow: [{
+        id: {
+            type: String,
+            
+        },
+        points: {
+            type: Array,
+        },
+        fillColor: {
+            type: String,
+        },
+    }],
+
+    scribble: [{
+        id: {
+            type: String,
+            
+        },
+        points: {
+            type: Array,
+        },
+        fillColor: {
+            type: String,
+        },
+    }]
+
+    
 });
 
-const availability = new Schema({
-    monday: fromToSchema,
-    tuesday: fromToSchema,
-    wednesday: fromToSchema,
-    thursday: fromToSchema,
-    friday: fromToSchema,
-    saturday: fromToSchema,
-    sunday: fromToSchema,
-});
-
-export const Availability = mongoose.model("Availability", availability)
+export const Overlay = mongoose.model("Overlay", overlaySchema)
 
 const userSchema = new Schema(
     {
@@ -43,8 +99,9 @@ const userSchema = new Schema(
             //required: true
         },
         overlay: {
-            type: JSON,
-            ref: "Availability"
+            type: Schema.Types.ObjectId,
+            ref: "Overlay"
+            
         },
         password: {
             type: String,

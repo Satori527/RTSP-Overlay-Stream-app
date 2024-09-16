@@ -1,4 +1,4 @@
-import { Availability, User } from "../models/user.model.js";
+import { Overlay, User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -31,12 +31,12 @@ const helloTest = asyncHandler( async (req, res) => {
 
 const registerUser = asyncHandler( async (req, res) => {
     
-    const {name, email, role, password} = req.body;
+    const {name, email, password} = req.body;
     
     console.log("email: ",email);
 
     if (
-    ([name, email, password, role].some((field) => field?.trim() === ""))
+    ([name, email, password].some((field) => field?.trim() === ""))
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -47,7 +47,7 @@ const registerUser = asyncHandler( async (req, res) => {
             "Email": email,
             "Role": role,
             "avatar": `https://robohash.org/${email}\.png?size=50x50&set=set1`,
-            "availability": availability
+            "Overlay": Overlay
         })
     }
     */
@@ -62,44 +62,15 @@ const registerUser = asyncHandler( async (req, res) => {
         name,
         email,
         password,
-        role,
         avatar:`https://robohash.org/${email}\.png?size=50x50&set=set1`,
-        availability: await Availability.create({
-            monday: {
-                from: "09:00",
-                to: "17:00",
-                active: true
-            },
-            tuesday: {
-                from: "09:00",
-                to: "17:00",
-                active: true
-            },
-            wednesday: {
-                from: "09:00",
-                to: "17:00",
-                active: true
-            },
-            thursday: {
-                from: "09:00",
-                to: "17:00",
-                active: true
-            },
-            friday: {
-                from: "09:00",
-                to: "17:00",
-                active: true
-            },
-            saturday: {
-                from: "09:00",
-                to: "17:00",
-                active: false
-            },
-            sunday: {
-                from: "09:00",
-                to: "17:00",
-                active: false
-            }
+        overlay: await Overlay.create({
+            rect:[{
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0,
+                fillColor: "#ffffff"
+            }]
         })
         
     })
@@ -237,38 +208,44 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
-const getUserAvailability = asyncHandler(async(req, res) => {
-    console.log("getAvailability");
-    if(!req.body.availability){
-        throw new ApiError(400, "Availability is required")
+
+
+const getUserOverlay = asyncHandler(async(req, res) => {
+    console.log("getOverlay");
+    if(!req.body._id){
+        throw new ApiError(400, "user id is required")
     }
-    const userAvailability = await Availability.findById(req.body.availability)
+    const userOverlay = await Overlay.findById(req.body._id)
     return res
     .status(200)
     .json(new ApiResponse(
         200,
-        userAvailability,
-        "User availability fetched successfully"
+        userOverlay,
+        "User Overlay fetched successfully"
     ))
 })
 
-const updateAvailability = asyncHandler( async (req, res) => {
+const updateOverlay = asyncHandler( async (req, res) => {
 
-    const userAvailability = req.body;
+    const userOverlay = req.body;
+    
+    console.log(userOverlay.overlay)
 
-    const updatedUser = await Availability.replaceOne(
+    const updatedUser = await Overlay.replaceOne(
+
         {
-            _id: userAvailability._id
+            _id: userOverlay._id,
         },
-        userAvailability
+        userOverlay.overlay
     )
+    console.log(updatedUser)
 
     return res
     .status(200)
     .json(new ApiResponse(
         200,
         updatedUser,
-        "User availability updated successfully"
+        "User Overlay updated successfully"
     ))
     
 
@@ -296,8 +273,8 @@ const getUsers = asyncHandler( async (req, res) => {
 const getUserById = asyncHandler( async (req, res) => {
     const {id} = req.body;
     const user = await User.findById(id)
-    const availability = await Availability.findById(user.availability)
-    user.availability = availability
+    const Overlay = await Overlay.findById(user.Overlay)
+    user.Overlay = Overlay
     res.status(200).json(user)
 })
 
@@ -312,14 +289,6 @@ const getUsersByName = asyncHandler( async (req, res) =>{
     res.send(users)
 })
 
-const filterUsersByAvailability = asyncHandler( async (req, res) =>{
-    let {available} = req.params
-    available = (available === "true");
-    const users = await User.find({
-        available: available
-    })
-    res.send(users)
-})
 
 
 
@@ -351,5 +320,5 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
 });
 
 
-export { filterUsersByAvailability, getCurrentUser, getUserAvailability, getUserById, getUsers, getUsersByName, helloTest, loginUser, logoutUser, pingJson, refreshAccessToken, registerUser, updateAccountDetails, updateAvailability };
+export { getCurrentUser, getUserById, getUserOverlay, getUsers, getUsersByName, helloTest, loginUser, logoutUser, pingJson, refreshAccessToken, registerUser, updateAccountDetails, updateOverlay };
 
