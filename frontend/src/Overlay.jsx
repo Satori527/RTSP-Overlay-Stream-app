@@ -2,7 +2,7 @@ import Konva from "konva";
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiLoaderCircle } from "react-icons/bi";
 import { FaLongArrowAltRight } from "react-icons/fa";
-import { FaRegCircle } from "react-icons/fa6";
+import { FaRegCircle, FaStar } from "react-icons/fa6";
 import { GiArrowCursor } from "react-icons/gi";
 import { IoMdCloudUpload, IoMdDownload } from "react-icons/io";
 import { IoText, IoTrashBinOutline } from "react-icons/io5";
@@ -15,6 +15,7 @@ import {
     Line,
     Rect,
     Stage,
+    Star,
     Transformer
 } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
@@ -23,7 +24,17 @@ import { EditableText } from "./components/EditableText.jsx";
 import { ACTIONS } from "./constants";
 //import React, { useEffect, useState } from 'react';
 
+function generateShapes() {
+    return [...Array(10)].map((_, i) => ({
+        id: i.toString(),
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        rotation: Math.random() * 180,
+        isDragging: false,
+    }));
+}
 
+const INITIAL_STATE = generateShapes();
 
 const Overlay = () => {
     const stageRef = useRef();
@@ -33,6 +44,7 @@ const Overlay = () => {
     const [circles, setCircles] = useState([]);
     const [arrows, setArrows] = useState([]);
     const [scribbles, setScribbles] = useState([]);
+    const [stars, setStars] = useState([]);
     const [textAreas, setTextAreas] = useState([]);
     
     const [text, setText] = useState("Click to resize. Double click to edit.");
@@ -103,6 +115,30 @@ const Overlay = () => {
         };
     
         const onTextChange = (value) => setText(value);
+
+
+        //star functions
+        const handleDragStart = (e) => {
+            const id = e.target.id();
+            setStars(
+                stars.map((star) => {
+                return {
+                    ...star,
+                    isDragging: star.id === id,
+                };
+            })
+            );
+        };
+        const handleDragEnd = (e) => {
+            setStars(
+                stars.map((star) => {
+                return {
+                    ...star,
+                    isDragging: false,
+                };
+            })
+            );
+        };
     
         function onPointerDown() {
         if (action === ACTIONS.SELECT) return;
@@ -168,7 +204,7 @@ const Overlay = () => {
                 {
                 id,
                 x,
-                y
+                y,
                 
                 },
             ]);
@@ -269,24 +305,41 @@ const Overlay = () => {
     
         async function handleSave() {
         let stageJson = stageRef.current.toJSON();
-        
+
+        let textVal ;
+
+        if(!textAreas[0]){
+            textVal = null
+        }else{
+            textVal = {
+                id:textAreas[0].id,
+                x:textAreas[0].x,
+                y:textAreas[0].y,
+                color:fillColor,
+                text:text,
+                width:width,
+                height:height
+            }
+        }
         //let rectJson = rect.toJSON();
         console.log("stage", stageJson);
         console.log("rect", rectangles);
         console.log("circle", circles);
         console.log("arrow", arrows);
         console.log("scribble", scribbles);
-
+        console.log("star", stars);
         console.log("text", textAreas);
-    
+            
     
         let data = {
-            _id: "66e7242cea48f1eb1a37499c",
+            _id: "66e7e7c052ac59b536f2fc3b",
             overlay:{
                 rect: rectangles,
                 circle: circles,
                 arrow: arrows,
                 scribble: scribbles,
+                star: stars,
+                text: textVal
             }
             
         }
@@ -318,7 +371,7 @@ const Overlay = () => {
             console.log(stageJson);
 
             let data = {
-                _id: "66e7242cea48f1eb1a37499c",
+                _id: "66e7e7c052ac59b536f2fc3b",
                 
             }
     
@@ -337,11 +390,19 @@ const Overlay = () => {
             setCircles(response.data.data.circle)
             setArrows(response.data.data.arrow)
             setScribbles(response.data.data.scribble)
+            setStars(response.data.data.star)
+            setTextAreas(prev=>[...prev, response.data.data.text])
+            setWidth(response.data.data.text.width)
+            setHeight(response.data.data.text.height)
+            setFillColor(response.data.data.text.color)
+            setText(response.data.data.text.text)
 
             Konva.Rect.create(response.data.data.rect);
             Konva.Circle.create(response.data.data.circle);
             Konva.Arrow.create(response.data.data.arrow);
             Konva.Scribble.create(response.data.data.scribble);
+            Konva.Star.create(response.data.data.star);
+            Konva.Text.create(response.data.data.text);
             
             //if(response.data.data) dispatch(authLogin(response.data.data));
             
@@ -360,7 +421,8 @@ const Overlay = () => {
         setCircles([]);
         setArrows([]);
         setScribbles([]);
-        setTextAreas([]); 
+        setTextAreas([]);
+        setStars([]);
     
         }
     
@@ -420,6 +482,16 @@ const Overlay = () => {
                     onClick={() => setAction(ACTIONS.CIRCLE)}
                 >
                     <FaRegCircle size={"1.5rem"} />
+                </button>
+                <button
+                    className={
+                    action === ACTIONS.STAR
+                        ? "bg-violet-300 p-1 rounded"
+                        : "p-1 hover:bg-violet-100 rounded"
+                    }
+                    onClick={() => setStars(INITIAL_STATE)}
+                >
+                    <FaStar size={"1.5rem"} />
                 </button>
                 <button
                     className={
@@ -493,7 +565,7 @@ const Overlay = () => {
             </p>
             <h1>{`${mode}`}</h1>
             </div>
-            <Stage id = "canvas" className="z-10 bg-transparent"
+            <Stage id = "canvas" className="bg-transparent"
                 ref={stageRef}
                 width={window.innerWidth}
                 height={window.innerHeight}
@@ -567,14 +639,39 @@ const Overlay = () => {
                     onClick={onClick}
                     />
                 ))}
-                {textAreas.map((textArea) => (
+                {(stars) && stars.map((star) => (
+                <Star
+                    key={star.id}
+                    id={star.id}
+                    x={star.x}
+                    y={star.y}
+                    numPoints={5}
+                    innerRadius={20}
+                    outerRadius={40}
+                    fill="#89b717"
+                    opacity={0.8}
+                    draggable
+                    rotation={star.rotation}
+                    shadowColor="black"
+                    shadowBlur={10}
+                    shadowOpacity={0.6}
+                    shadowOffsetX={star.isDragging ? 10 : 5}
+                    shadowOffsetY={star.isDragging ? 10 : 5}
+                    scaleX={star.isDragging ? 1.2 : 1}
+                    scaleY={star.isDragging ? 1.2 : 1}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+            />
+        ))}
+                {(textAreas[0]) && textAreas.map((textArea) => (
                     <EditableText
                     key={textArea.id}
                     x={textArea.x}
                     y={textArea.y}
                     text={text}
-                    width={textArea.width}
-                    height={textArea.height}
+                    width={width}
+                    color={fillColor}
+                    height={height}
                     onResize={onTextResize}
                     onClick={onClick}
                     isEditing={isEditing}

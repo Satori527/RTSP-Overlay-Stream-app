@@ -14,6 +14,7 @@ export function EditableText({
   onToggleTransform,
   onChange,
   onResize,
+  color,
   text,
   width,
   onClick,
@@ -37,6 +38,7 @@ export function EditableText({
         width={width}
         height={height}
         value={text}
+        color={color}
         onDoubleClick={onToggleEdit}
         onChange={handleTextChange}
         onKeyDown={handleEscapeKeys}
@@ -49,6 +51,7 @@ export function EditableText({
       y={y}
       isSelected={isTransforming}
       onClick={onClick}
+      color={color}
       onDoubleClick={onToggleEdit}
       onResize={onResize}
       text={text}

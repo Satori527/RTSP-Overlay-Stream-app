@@ -7,6 +7,7 @@ export function ResizableText({
   text,
   isSelected,
   width,
+  color,
   onResize,
   onClick,
   onDoubleClick
@@ -54,7 +55,7 @@ export function ResizableText({
         y={y}
         ref={textRef}
         text={text}
-        fill="black"
+        fill={color}
         fontFamily="sans-serif"
         fontSize={24}
         perfectDrawEnabled={false}

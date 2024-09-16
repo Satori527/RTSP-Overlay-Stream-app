@@ -72,7 +72,55 @@ const overlaySchema = new Schema({
         fillColor: {
             type: String,
         },
-    }]
+    }],
+    star: [{
+        id: {
+            type: String,
+            
+        },
+        isDragging: {
+            type: Boolean,
+            default: false
+        },
+        rotation: {
+            type: Number,
+        },
+        x: {
+            type: Number,
+        },
+        y: {
+            type: Number,
+        },
+        fillColor: {
+            type: String,
+        },
+    }],
+
+    text: {
+        id: {
+            type: String,
+            
+        },
+        x: {
+            type: Number,
+        },
+        y: {
+            type: Number,
+        },
+        text: {
+            type: String,
+        },
+        width: {
+            type: Number,
+        },
+        height: {
+            type: Number,
+        },
+        color: {
+            type: String,
+        }
+    },
+
 
     
 });
