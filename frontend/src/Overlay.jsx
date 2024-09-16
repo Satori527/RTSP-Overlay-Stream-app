@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import Konva from "konva";
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiLoaderCircle } from "react-icons/bi";
@@ -471,7 +472,8 @@ const Overlay = () => {
     
         return (
         <>
-            <div  className=" relative w-full h-screen overflow-hidden">
+            <div className=" relative w-full h-screen overflow-hidden">
+            
             {/* Controls */}
             <div className="absolute bg-blue-200 -bottom-0 z-10 w-full py-2 ">
                 <div className="flex justify-center z-20 items-center gap-3 py-2 px-3 w-fit mx-auto border-4 shadow-lg rounded-lg border-teal-500 border-solid bg-white">
