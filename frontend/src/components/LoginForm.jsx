@@ -17,7 +17,7 @@ function LoginForm() {
 
     useEffect(() => {
         if(authstatus){
-            navigate("/profile")
+            navigate("/overlay")
         }
     }, [authstatus])
 

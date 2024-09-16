@@ -1,9 +1,12 @@
 import Konva from "konva";
+import { useSelector } from "react-redux";
+
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiLoaderCircle } from "react-icons/bi";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { FaRegCircle, FaStar } from "react-icons/fa6";
 import { GiArrowCursor } from "react-icons/gi";
+
 import { IoMdCloudUpload, IoMdDownload } from "react-icons/io";
 import { IoText, IoTrashBinOutline } from "react-icons/io5";
 import { LuPencil } from "react-icons/lu";
@@ -37,6 +40,9 @@ function generateShapes() {
 const INITIAL_STATE = generateShapes();
 
 const Overlay = () => {
+
+    const userData = useSelector((state) => state.auth.userData);
+
     const stageRef = useRef();
     const [action, setAction] = useState(ACTIONS.SELECT);
     const [fillColor, setFillColor] = useState("#ff0000");
@@ -332,7 +338,7 @@ const Overlay = () => {
             
     
         let data = {
-            _id: "66e7e7c052ac59b536f2fc3b",
+            _id: userData.user.overlay,
             overlay:{
                 rect: rectangles,
                 circle: circles,
@@ -371,7 +377,7 @@ const Overlay = () => {
             console.log(stageJson);
 
             let data = {
-                _id: "66e7e7c052ac59b536f2fc3b",
+                _id: userData.user.overlay,
                 
             }
     
