@@ -41,8 +41,8 @@ const INITIAL_STATE = generateShapes();
 
 const Overlay = () => {
 
+    //user auth check
     const navigate = useNavigate();
-
     const authStatus = useSelector((state) => state.auth.status)
     useEffect(() => {
         if(!authStatus){
@@ -85,14 +85,8 @@ const Overlay = () => {
     
     const isDraggable = action === ACTIONS.SELECT;
     
-        // const checkMousePos = () => {
-        //   if((event.clientX==textAreas[0].x)&&(event.clientY==textAreas[0].y)){
-        //     setIsEditing(false);
-        //     setIsTransforming(false);
-        //   }
-        // }
-    
-        // document.addEventListener("click", checkMousePos);
+
+        //overlay elements state chanege handlers
 
         const changePos = () => {
             (pos === "relative") ? setPos("absolute translate-y-80") : setPos("relative");
@@ -119,7 +113,6 @@ const Overlay = () => {
         onTextClick(!isTransforming);
         }
     
-        //from sticky note
         const onTextResize = (newWidth, newHeight) => {
         setWidth(newWidth);
         setHeight(newHeight);
@@ -135,8 +128,6 @@ const Overlay = () => {
     
         const onTextChange = (value) => setText(value);
 
-
-        //star functions
         const handleDragStart = (e) => {
             const id = e.target.id();
             setStars(
@@ -148,6 +139,7 @@ const Overlay = () => {
             })
             );
         };
+
         const handleDragEnd = (e) => {
             setStars(
                 stars.map((star) => {
@@ -158,7 +150,17 @@ const Overlay = () => {
             })
             );
         };
-    
+
+        
+        function onClick(e) {
+            if (action !== ACTIONS.SELECT) return;
+            const target = e.currentTarget;
+            transformerRef.current.nodes([target]);
+            }
+
+
+        //mouse events
+
         function onPointerDown() {
         if (action === ACTIONS.SELECT) return;
     
@@ -240,6 +242,9 @@ const Overlay = () => {
         //     }, 0);
         //   }
         // }, [ACTIONS.TEXT, currentShapeId.current]);
+
+
+
         function onPointerMove() {
         if (action === ACTIONS.SELECT || !isPaining.current) return;
     
@@ -321,6 +326,9 @@ const Overlay = () => {
     
         isPaining.current = false;
         }
+
+
+        //API calls
     
         async function handleSave() {
         let stageJson = stageRef.current.toJSON();
@@ -395,7 +403,7 @@ const Overlay = () => {
             }
     
     
-        const json={"attrs":{"width":648,"height":944},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"height":944,"width":648,"fill":"#ffffff","id":"bg"},"className":"Rect"},{"attrs":{"x":143,"y":439,"stroke":"#000","fill":"#ff0000","height":114,"width":379},"className":"Rect"},{"attrs":{},"className":"Transformer"}]}]}
+        
     
         try{
             const response = await axiosAPI.post('/users/overlay', data)
@@ -458,11 +466,6 @@ const Overlay = () => {
     
         
     
-        function onClick(e) {
-        if (action !== ACTIONS.SELECT) return;
-        const target = e.currentTarget;
-        transformerRef.current.nodes([target]);
-        }
 
 
     
