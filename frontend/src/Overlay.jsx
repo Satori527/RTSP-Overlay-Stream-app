@@ -1,11 +1,11 @@
 import Konva from "konva";
-import { useSelector } from "react-redux";
-
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiLoaderCircle } from "react-icons/bi";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { FaRegCircle, FaStar } from "react-icons/fa6";
 import { GiArrowCursor } from "react-icons/gi";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { IoMdCloudUpload, IoMdDownload } from "react-icons/io";
 import { IoText, IoTrashBinOutline } from "react-icons/io5";
@@ -41,7 +41,20 @@ const INITIAL_STATE = generateShapes();
 
 const Overlay = () => {
 
+    const navigate = useNavigate();
+
+    const authStatus = useSelector((state) => state.auth.status)
+    useEffect(() => {
+        if(!authStatus){
+            console.log("Not logged in")
+            navigate("/login")
+        }
+    }), [authStatus]
+    
+
+
     const userData = useSelector((state) => state.auth.userData);
+        
 
     const stageRef = useRef();
     const [action, setAction] = useState(ACTIONS.SELECT);

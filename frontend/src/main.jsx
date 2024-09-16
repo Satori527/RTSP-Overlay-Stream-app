@@ -16,7 +16,6 @@ import Home from './Home.jsx';
 import Login from './Login.jsx';
 import Overlay from './Overlay.jsx';
 import Signup from './Signup.jsx';
-import Stream from './Stream.jsx';
 
 const router = createBrowserRouter([
   {
@@ -25,7 +24,6 @@ const router = createBrowserRouter([
     children: [
 
       { path: '/', element: <Home /> },
-      { path: '/stream', element: <Stream /> },
       { path: '/overlay', element: <Overlay /> },
       { path: '/login', element: <Login /> },
       { path: '/signup', element: <Signup /> },

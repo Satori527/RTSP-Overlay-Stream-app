@@ -29,9 +29,6 @@ function Header() {
             <div className="head bg-sky-400 w-full h-16 flex flex-row justify-between items-center -">
                 <div className="inline-block w-auto m-8 text-3xl text-white">StreamApp</div>
             
-            
-            <Link className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-700" to="/Stream">Stream</Link>
-            <Link className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-700" to="/Overlay">Overlay</Link>
                 {
                     (authStatus)?
                     (<div className="flex gap-4 flex-row m-8">

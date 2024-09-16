@@ -251,6 +251,20 @@ const updateOverlay = asyncHandler( async (req, res) => {
 
 })
 
+const deleteUserOverlay = asyncHandler(async(req, res) => {
+    if(!req.body._id){
+        throw new ApiError(400, "user id is required")
+    }
+    const userOverlay = await Overlay.findByIdAndDelete(req.body._id)
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        userOverlay,
+        "User Overlay deleted successfully"
+    ))
+})
+
 const getCurrentUser = asyncHandler(async(req, res) => {
     return res
     .status(200)
@@ -262,63 +276,5 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 })
 
 
-
-
-
-const getUsers = asyncHandler( async (req, res) => {
-    const users = await User.find({})
-    res.status(200).json(users)
-})
-
-const getUserById = asyncHandler( async (req, res) => {
-    const {id} = req.body;
-    const user = await User.findById(id)
-    const Overlay = await Overlay.findById(user.Overlay)
-    user.Overlay = Overlay
-    res.status(200).json(user)
-})
-
-const getUsersByName = asyncHandler( async (req, res) =>{
-    const {name} = req.params
-    
-    const users = await User.find({
-        first_name: name
-    })
-    
-    console.log(users)
-    res.send(users)
-})
-
-
-
-
-
-
-
-const updateAccountDetails = asyncHandler(async(req, res) => {
-    const {fullName, email} = req.body
-
-    if (!fullName || !email) {
-        throw new ApiError(400, "All fields are required")
-    }
-
-    const user = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                fullName,
-                email: email
-            }
-        },
-        {new: true}
-        
-    ).select("-password")
-
-    return res
-    .status(200)
-    .json(new ApiResponse(200, user, "Account details updated successfully"))
-});
-
-
-export { getCurrentUser, getUserById, getUserOverlay, getUsers, getUsersByName, helloTest, loginUser, logoutUser, pingJson, refreshAccessToken, registerUser, updateAccountDetails, updateOverlay };
+export { deleteUserOverlay, getCurrentUser, getUserOverlay, helloTest, loginUser, logoutUser, refreshAccessToken, registerUser, updateOverlay };
 
