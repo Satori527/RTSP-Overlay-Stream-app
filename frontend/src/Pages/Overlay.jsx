@@ -23,9 +23,9 @@ import {
     Transformer
 } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
-import { axiosAPI } from './api/axiosAPI';
-import { EditableText } from "./components/EditableText.jsx";
-import { ACTIONS } from "./constants";
+import { axiosAPI } from '../api/axiosAPI.js';
+import { EditableText } from "../components/EditableText.jsx";
+import { ACTIONS } from "../constants.js";
 //import React, { useEffect, useState } from 'react';
 
 function generateShapes() {

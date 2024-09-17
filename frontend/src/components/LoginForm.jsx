@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { axiosAPI } from '../api/axiosAPI';
 import { login as authLogin } from '../store/authSlice';
 import './SignupForm.css';
@@ -85,7 +85,12 @@ function LoginForm() {
 
                     type="submit"
                     value="Login" />
+                <p>
+                    Don&apos;t have an account?&nbsp;
+                    <Link className="text-teal-400 font-bold hover:text-teal-700" to="/signup">Signup</Link>
+                </p>
             </form>
+            
             </div>
             
         </>

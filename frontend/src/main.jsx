@@ -12,10 +12,10 @@ import store from "./store/store.js";
 //import store from "./store/store.js";
 
 
-import Home from './Home.jsx';
-import Login from './Login.jsx';
-import Overlay from './Overlay.jsx';
-import Signup from './Signup.jsx';
+import Home from './Pages/Home.jsx';
+import Login from './Pages/Login.jsx';
+import Overlay from './Pages/Overlay.jsx';
+import Signup from './Pages/Signup.jsx';
 
 const router = createBrowserRouter([
   {
